@@ -1,0 +1,79 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = "postgresql://postgres:diskette42@localhost:5432/crudprisma?schema=public"
+}
+
+
+model User {
+  id     Int     @id @default(autoincrement())
+  username String @unique
+  password String
+  History UserHistory[]
+  jwt String?
+  role Int @default(0)
+  Transactions Transaction[]
+}
+
+model Products {
+  id     Int     @id @default(autoincrement())
+  name String
+  price Int
+  description String
+  image String
+  History UserHistory[]
+  isOnStock Boolean @default(true)
+}
+
+model UserHistory {
+  id     Int     @id @default(autoincrement())
+  user   User    @relation(fields: [userId], references: [id])
+  userId Int
+  product   Products    @relation(fields: [productId], references: [id])
+  productId Int
+  quantity Int
+  created_at DateTime
+  transaction Transaction @relation(fields: [transactionId], references: [id])
+  transactionId Int
+}
+
+model Transaction {
+  id Int @id @default(autoincrement())
+  user   User    @relation(fields: [userId], references: [id])
+  userId Int
+  transactionId UserHistory[]
+  totalPrice Float
+  created_at DateTime @default(now())
+}
+
+// model Post {
+//   id        Int      @id @default(autoincrement())
+//   createdAt DateTime @default(now())
+//   updatedAt DateTime @updatedAt
+//   title     String   @db.VarChar(255)
+//   content   String?
+//   published Boolean  @default(false)
+//   author    User     @relation(fields: [authorId], references: [id])
+//   authorId  Int
+// }
+
+// model Profile {
+//   id     Int     @id @default(autoincrement())
+//   bio    String?
+//   user   User    @relation(fields: [userId], references: [id])
+//   userId Int     @unique
+// }
+
+// model User {
+//   id      Int      @id @default(autoincrement())
+//   email   String   @unique
+//   name    String?
+//   posts   Post[]
+//   profile Profile?
+// }
